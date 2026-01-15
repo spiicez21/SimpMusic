@@ -1,6 +1,8 @@
 package com.maxrave.simpmusic.ui.component
 
 import androidx.compose.animation.Crossfade
+import com.maxrave.simpmusic.ui.theme.PentagonShape
+import com.maxrave.simpmusic.ui.theme.CookieShape
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -1939,25 +1941,22 @@ fun HeartCheckBox(
     checked: Boolean,
     onStateChange: (() -> Unit)? = null,
 ) {
-    Box(
+    Surface(
+        onClick = { onStateChange?.invoke() },
+        shape = PentagonShape,
+        color = Color.White.copy(alpha = 0.1f),
         modifier =
             Modifier
-                .size(size.dp)
-                .clip(
-                    CircleShape,
-                ).clickable {
-                    onStateChange?.invoke()
-                },
+                .size(size.dp + 12.dp),
     ) {
-        Crossfade(targetState = checked, modifier = Modifier.fillMaxSize()) {
+        Crossfade(targetState = checked, modifier = Modifier.fillMaxSize().padding(6.dp)) {
             if (it) {
                 Image(
                     painter = painterResource(Res.drawable.baseline_favorite_24),
                     contentDescription = "Favorite checked",
                     modifier =
                         Modifier
-                            .fillMaxSize()
-                            .padding(4.dp),
+                            .fillMaxSize(),
                 )
             } else {
                 Image(
@@ -1965,8 +1964,7 @@ fun HeartCheckBox(
                     contentDescription = "Favorite unchecked",
                     modifier =
                         Modifier
-                            .fillMaxSize()
-                            .padding(4.dp),
+                            .fillMaxSize(),
                     colorFilter = ColorFilter.tint(Color.White),
                 )
             }

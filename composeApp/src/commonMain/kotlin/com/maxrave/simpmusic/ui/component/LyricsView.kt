@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.maxrave.simpmusic.ui.component
 
 import androidx.compose.animation.AnimatedVisibility
@@ -41,9 +43,10 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
@@ -820,11 +823,11 @@ fun FullscreenLyricsSheet(
                                 Crossfade(timelineState.loading) {
                                     if (it) {
                                         CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
-                                            LinearProgressIndicator(
+                                            LinearWavyProgressIndicator(
                                                 modifier =
                                                     Modifier
                                                         .fillMaxWidth()
-                                                        .height(4.dp)
+                                                        .height(6.dp)
                                                         .padding(
                                                             horizontal = 3.dp,
                                                         ).clip(
@@ -832,28 +835,34 @@ fun FullscreenLyricsSheet(
                                                         ),
                                                 color = Color.Gray,
                                                 trackColor = Color.DarkGray,
-                                                strokeCap = StrokeCap.Round,
                                             )
                                         }
                                     } else {
                                         CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
-                                            LinearProgressIndicator(
-                                                progress = { timelineState.bufferedPercent.toFloat() / 100 },
-                                                modifier =
-                                                    Modifier
-                                                        .fillMaxWidth()
-                                                        .height(4.dp)
-                                                        .padding(
-                                                            horizontal = 3.dp,
-                                                        ).clip(
-                                                            RoundedCornerShape(8.dp),
-                                                        ),
-                                                color = Color.Gray,
-                                                trackColor = Color.DarkGray,
-                                                strokeCap = StrokeCap.Round,
-                                                drawStopIndicator = {},
-                                            )
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(6.dp)
+                                                    .padding(horizontal = 3.dp)
+                                                    .clip(RoundedCornerShape(8.dp))
+                                            ) {
+                                                // Buffering layer
+                                                LinearWavyProgressIndicator(
+                                                    progress = { timelineState.bufferedPercent.toFloat() / 100 },
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    color = Color.Gray.copy(alpha = 0.6f),
+                                                    trackColor = Color.DarkGray,
+                                                )
+                                                // Actual progress layer
+                                                LinearWavyProgressIndicator(
+                                                    progress = { if (timelineState.total > 0) timelineState.current.toFloat() / timelineState.total.toFloat() else 0f },
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    color = Color.White,
+                                                    trackColor = Color.Transparent,
+                                                )
+                                            }
                                         }
+
                                     }
                                 }
                             }

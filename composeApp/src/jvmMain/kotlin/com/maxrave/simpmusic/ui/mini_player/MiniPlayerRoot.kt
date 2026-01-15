@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.maxrave.simpmusic.ui.mini_player
 
 import androidx.compose.animation.AnimatedVisibility
@@ -33,9 +35,10 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,6 +65,9 @@ import coil3.compose.AsyncImage
 import com.maxrave.domain.data.model.streams.TimeLine
 import com.maxrave.simpmusic.ui.component.PlayPauseButton
 import com.maxrave.simpmusic.ui.component.RippleIconButton
+import com.maxrave.simpmusic.ui.component.HeartCheckBox
+import com.maxrave.simpmusic.ui.theme.PentagonShape
+import com.maxrave.simpmusic.ui.theme.CookieShape
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.SharedViewModel
 import com.maxrave.simpmusic.viewModel.UIEvent
@@ -100,10 +106,13 @@ fun MiniPlayerRoot(
     // Check if there's any track playing
     val hasTrack = nowPlayingData?.nowPlayingTitle?.isNotBlank() == true
     
+    val expressiveShape = RoundedCornerShape(24.dp)
+    
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().clip(expressiveShape),
         color = Color(0xFF1C1C1E),
-        shape = RoundedCornerShape(8.dp)
+        shape = expressiveShape,
+        tonalElevation = 6.dp
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             if (!hasTrack) {
@@ -235,7 +244,7 @@ private fun EmptyMiniPlayerState() {
  * Kept for backwards compatibility
  */
 @Composable
-private fun ExpandedMiniLayout(
+fun ExpandedMiniLayout(
     nowPlayingData: com.maxrave.simpmusic.viewModel.NowPlayingScreenData,
     controllerState: com.maxrave.domain.mediaservice.handler.ControlState,
     timeline: TimeLine,
@@ -315,23 +324,11 @@ private fun ExpandedMiniLayout(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         // Like button
-                        IconButton(
-                            onClick = { onUIEvent(UIEvent.ToggleLike) },
-                            modifier = Modifier.size(28.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (controllerState.isLiked) 
-                                    Icons.Filled.Favorite 
-                                else 
-                                    Icons.Outlined.FavoriteBorder,
-                                contentDescription = "Like",
-                                tint = if (controllerState.isLiked) 
-                                    Color(0xFFFF4081) 
-                                else 
-                                    Color.White.copy(alpha = 0.7f),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
+                        HeartCheckBox(
+                            size = 20,
+                            checked = controllerState.isLiked,
+                            onStateChange = { onUIEvent(UIEvent.ToggleLike) }
+                        )
                         
                         RippleIconButton(
                             resId = Res.drawable.baseline_skip_previous_24,
@@ -386,20 +383,18 @@ private fun ExpandedMiniLayout(
                 }
             }
             
-            // Progress bar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(3.dp)
+                    .height(6.dp)
                     .background(Color(0xFF2C2C2E))
             ) {
                 if (timeline.total > 0L && timeline.current >= 0L) {
-                    LinearProgressIndicator(
+                    LinearWavyProgressIndicator(
                         progress = { timeline.current.toFloat() / timeline.total },
                         modifier = Modifier.fillMaxSize(),
                         color = Color.White,
                         trackColor = Color.Transparent,
-                        strokeCap = StrokeCap.Round,
                     )
                 }
             }

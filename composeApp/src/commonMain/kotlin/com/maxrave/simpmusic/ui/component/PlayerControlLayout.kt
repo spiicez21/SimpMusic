@@ -1,26 +1,14 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
 package com.maxrave.simpmusic.ui.component
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.PauseCircle
-import androidx.compose.material.icons.rounded.PlayCircle
-import androidx.compose.material.icons.rounded.Repeat
-import androidx.compose.material.icons.rounded.RepeatOne
-import androidx.compose.material.icons.rounded.Shuffle
-import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.material.icons.rounded.SkipPrevious
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.maxrave.domain.mediaservice.handler.ControlState
 import com.maxrave.domain.mediaservice.handler.RepeatState
+import com.maxrave.simpmusic.ui.theme.CookieShape
 import com.maxrave.simpmusic.ui.theme.seed
-import com.maxrave.simpmusic.ui.theme.transparent
 import com.maxrave.simpmusic.viewModel.UIEvent
 
 @Composable
@@ -52,33 +40,19 @@ fun PlayerControlLayout(
                 .height(height)
                 .padding(horizontal = 20.dp),
     ) {
+        // Shuffle
         Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            Box(
-                modifier =
-                    Modifier
-                        .background(transparent)
-                        .size(smallIcon.second)
-                        .aspectRatio(1f)
-                        .clip(
-                            CircleShape,
-                        )
-                        .clickable {
-                            onUIEvent(UIEvent.Shuffle)
-                        },
-                contentAlignment = Alignment.Center,
+            Surface(
+                onClick = { onUIEvent(UIEvent.Shuffle) },
+                shape = CircleShape,
+                color = Color.Transparent,
+                modifier = Modifier.size(smallIcon.second).aspectRatio(1f)
             ) {
-                Crossfade(targetState = controllerState.isShuffle, label = "Shuffle Button") { isShuffle ->
-                    if (!isShuffle) {
+                Box(contentAlignment = Alignment.Center) {
+                    Crossfade(targetState = controllerState.isShuffle, label = "Shuffle Button") { isShuffle ->
                         Icon(
                             imageVector = Icons.Rounded.Shuffle,
-                            tint = Color.White,
-                            contentDescription = "",
-                            modifier = Modifier.size(smallIcon.first),
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Rounded.Shuffle,
-                            tint = seed,
+                            tint = if (isShuffle) seed else Color.White,
                             contentDescription = "",
                             modifier = Modifier.size(smallIcon.first),
                         )
@@ -86,57 +60,38 @@ fun PlayerControlLayout(
                 }
             }
         }
+        
+        // Previous
         Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            Box(
-                modifier =
-                    Modifier
-                        .background(transparent)
-                        .size(mediumIcon.second)
-                        .aspectRatio(1f)
-                        .clip(
-                            CircleShape,
-                        )
-                        .clickable {
-                            if (controllerState.isPreviousAvailable) {
-                                onUIEvent(UIEvent.Previous)
-                            }
-                        },
-                contentAlignment = Alignment.Center,
+            Surface(
+                onClick = { if (controllerState.isPreviousAvailable) onUIEvent(UIEvent.Previous) },
+                shape = CircleShape,
+                color = Color.Transparent,
+                modifier = Modifier.size(mediumIcon.second).aspectRatio(1f)
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.SkipPrevious,
-                    tint = if (controllerState.isPreviousAvailable) Color.White else Color.Gray,
-                    contentDescription = "",
-                    modifier = Modifier.size(mediumIcon.first),
-                )
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Rounded.SkipPrevious,
+                        tint = if (controllerState.isPreviousAvailable) Color.White else Color.Gray,
+                        contentDescription = "",
+                        modifier = Modifier.size(mediumIcon.first),
+                    )
+                }
             }
         }
+
+        // Play/Pause
         Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            Box(
-                modifier =
-                    Modifier
-                        .background(transparent)
-                        .size(bigIcon.second)
-                        .aspectRatio(1f)
-                        .clip(
-                            CircleShape,
-                        )
-                        .clickable {
-                            onUIEvent(UIEvent.PlayPause)
-                        },
-                contentAlignment = Alignment.Center,
+            Surface(
+                onClick = { onUIEvent(UIEvent.PlayPause) },
+                shape = CookieShape,
+                color = Color.White.copy(alpha = 0.1f),
+                modifier = Modifier.size(bigIcon.second).aspectRatio(1f)
             ) {
-                Crossfade(targetState = controllerState.isPlaying) { isPlaying ->
-                    if (!isPlaying) {
+                Box(contentAlignment = Alignment.Center) {
+                    Crossfade(targetState = controllerState.isPlaying) { isPlaying ->
                         Icon(
-                            imageVector = Icons.Rounded.PlayCircle,
-                            tint = Color.White,
-                            contentDescription = "",
-                            modifier = Modifier.size(bigIcon.first),
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Rounded.PauseCircle,
+                            imageVector = if (!isPlaying) Icons.Rounded.PlayCircle else Icons.Rounded.PauseCircle,
                             tint = Color.White,
                             contentDescription = "",
                             modifier = Modifier.size(bigIcon.first),
@@ -145,72 +100,61 @@ fun PlayerControlLayout(
                 }
             }
         }
+
+        // Next
         Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            Box(
-                modifier =
-                    Modifier
-                        .background(transparent)
-                        .size(mediumIcon.second)
-                        .aspectRatio(1f)
-                        .clip(
-                            CircleShape,
-                        )
-                        .clickable {
-                            if (controllerState.isNextAvailable) {
-                                onUIEvent(UIEvent.Next)
-                            }
-                        },
-                contentAlignment = Alignment.Center,
+            Surface(
+                onClick = { if (controllerState.isNextAvailable) onUIEvent(UIEvent.Next) },
+                shape = CircleShape,
+                color = Color.Transparent,
+                modifier = Modifier.size(mediumIcon.second).aspectRatio(1f)
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.SkipNext,
-                    tint = if (controllerState.isNextAvailable) Color.White else Color.Gray,
-                    contentDescription = "",
-                    modifier = Modifier.size(mediumIcon.first),
-                )
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Rounded.SkipNext,
+                        tint = if (controllerState.isNextAvailable) Color.White else Color.Gray,
+                        contentDescription = "",
+                        modifier = Modifier.size(mediumIcon.first),
+                    )
+                }
             }
         }
+
+        // Repeat
         Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            Box(
-                modifier =
-                    Modifier
-                        .size(smallIcon.second)
-                        .aspectRatio(1f)
-                        .clip(
-                            CircleShape,
-                        )
-                        .clickable {
-                            onUIEvent(UIEvent.Repeat)
-                        },
-                contentAlignment = Alignment.Center,
+            Surface(
+                onClick = { onUIEvent(UIEvent.Repeat) },
+                shape = CircleShape,
+                color = Color.Transparent,
+                modifier = Modifier.size(smallIcon.second).aspectRatio(1f)
             ) {
-                Crossfade(targetState = controllerState.repeatState) { rs ->
-                    when (rs) {
-                        is RepeatState.None -> {
-                            Icon(
-                                imageVector = Icons.Rounded.Repeat,
-                                tint = Color.White,
-                                contentDescription = "",
-                                modifier = Modifier.size(smallIcon.first),
-                            )
-                        }
-
-                        RepeatState.All -> {
-                            Icon(
-                                imageVector = Icons.Rounded.Repeat,
-                                tint = seed,
-                                contentDescription = "",
-                                modifier = Modifier.size(smallIcon.first),
-                            )
-                        }
-
-                        RepeatState.One -> {
-                            Icon(
-                                imageVector = Icons.Rounded.RepeatOne,
-                                tint = seed,
-                                contentDescription = "",
-                                modifier = Modifier.size(smallIcon.first),
-                            )
+                Box(contentAlignment = Alignment.Center) {
+                    Crossfade(targetState = controllerState.repeatState) { rs ->
+                        when (rs) {
+                            is RepeatState.None -> {
+                                Icon(
+                                    imageVector = Icons.Rounded.Repeat,
+                                    tint = Color.White,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(smallIcon.first),
+                                )
+                            }
+                            RepeatState.All -> {
+                                Icon(
+                                    imageVector = Icons.Rounded.Repeat,
+                                    tint = seed,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(smallIcon.first),
+                                )
+                            }
+                            RepeatState.One -> {
+                                Icon(
+                                    imageVector = Icons.Rounded.RepeatOne,
+                                    tint = seed,
+                                    contentDescription = "",
+                                    modifier = Modifier.size(smallIcon.first),
+                                )
+                            }
                         }
                     }
                 }

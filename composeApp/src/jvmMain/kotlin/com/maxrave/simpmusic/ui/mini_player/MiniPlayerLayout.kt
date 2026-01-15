@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package com.maxrave.simpmusic.ui.mini_player
 
 import androidx.compose.animation.AnimatedVisibility
@@ -30,9 +32,10 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LinearWavyProgressIndicator
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,6 +57,8 @@ import com.maxrave.domain.data.model.streams.TimeLine
 import com.maxrave.domain.mediaservice.handler.ControlState
 import com.maxrave.simpmusic.ui.component.PlayPauseButton
 import com.maxrave.simpmusic.ui.component.RippleIconButton
+import com.maxrave.simpmusic.ui.component.HeartCheckBox
+import com.maxrave.simpmusic.ui.theme.CookieShape
 import com.maxrave.simpmusic.ui.theme.typo
 import com.maxrave.simpmusic.viewModel.NowPlayingScreenData
 import com.maxrave.simpmusic.viewModel.UIEvent
@@ -180,9 +185,9 @@ fun MediumMiniLayout(
                         error = painterResource(Res.drawable.holder),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(48.dp)
+                            .size(52.dp)
                             .scale(artworkScale)
-                            .clip(RoundedCornerShape(6.dp))
+                            .clip(RoundedCornerShape(8.dp))
                             .hoverable(artworkInteractionSource)
                     )
                     
@@ -199,23 +204,11 @@ fun MediumMiniLayout(
                             enter = scaleIn() + fadeIn(),
                             exit = scaleOut() + fadeOut()
                         ) {
-                            IconButton(
-                                onClick = { onUIEvent(UIEvent.ToggleLike) },
-                                modifier = Modifier.size(28.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (controllerState.isLiked) 
-                                        Icons.Filled.Favorite 
-                                    else 
-                                        Icons.Outlined.FavoriteBorder,
-                                    contentDescription = "Like",
-                                    tint = if (controllerState.isLiked) 
-                                        Color(0xFFFF4081) 
-                                    else 
-                                        Color.White.copy(alpha = 0.7f),
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
+                        HeartCheckBox(
+                            size = 18,
+                            checked = controllerState.isLiked,
+                            onStateChange = { onUIEvent(UIEvent.ToggleLike) }
+                        )
                         }
                         
                         RippleIconButton(
@@ -289,16 +282,15 @@ private fun ProgressBar(timeline: TimeLine) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(3.dp)
+            .height(8.dp) // Height for waves
             .background(Color(0xFF2C2C2E))
     ) {
         if (timeline.total > 0L && timeline.current >= 0L) {
-            LinearProgressIndicator(
+            LinearWavyProgressIndicator(
                 progress = { timeline.current.toFloat() / timeline.total },
                 modifier = Modifier.fillMaxSize(),
                 color = Color.White,
                 trackColor = Color.Transparent,
-                strokeCap = StrokeCap.Round,
             )
         }
     }
@@ -347,9 +339,9 @@ fun SquareMiniLayout(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth(0.85f)
+                    .fillMaxWidth(0.9f)
                     .scale(artworkScale)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(16.dp))
                     .hoverable(artworkInteractionSource)
             )
             
@@ -389,12 +381,11 @@ fun SquareMiniLayout(
                     .background(Color(0xFF2C2C2E), RoundedCornerShape(2.dp))
             ) {
                 if (timeline.total > 0L && timeline.current >= 0L) {
-                    LinearProgressIndicator(
+                    LinearWavyProgressIndicator(
                         progress = { timeline.current.toFloat() / timeline.total },
                         modifier = Modifier.fillMaxSize(),
                         color = Color.White,
                         trackColor = Color.Transparent,
-                        strokeCap = StrokeCap.Round,
                     )
                 }
             }
@@ -408,23 +399,11 @@ fun SquareMiniLayout(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // Like/Favorite button
-                IconButton(
-                    onClick = { onUIEvent(UIEvent.ToggleLike) },
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = if (controllerState.isLiked) 
-                            Icons.Filled.Favorite 
-                        else 
-                            Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Like",
-                        tint = if (controllerState.isLiked) 
-                            Color(0xFFFF4081) 
-                        else 
-                            Color.White.copy(alpha = 0.7f),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                HeartCheckBox(
+                    size = 24,
+                    checked = controllerState.isLiked,
+                    onStateChange = { onUIEvent(UIEvent.ToggleLike) }
+                )
                 
                 // Previous
                 RippleIconButton(
